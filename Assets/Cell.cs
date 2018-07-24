@@ -7,6 +7,8 @@ public class Cell : MonoBehaviour {
 
     private Vector3 _prevePosition;
 
+    private Vector3 _shift;
+
     private bool _dragging = false;
 
     public Vector2 GridSize;
@@ -35,12 +37,13 @@ public class Cell : MonoBehaviour {
             OnMouseDragStart();
         }
 
-        transform.position = GetCellPosUnderMouse();
+        transform.position = GetCellAtPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition) + _shift);
     }
 
     void OnMouseDragStart()
     {
         _prevePosition = transform.position;
+        _shift = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = new Vector3(transform.position.x, transform.position.y, -1f);
     }
 
@@ -54,14 +57,13 @@ public class Cell : MonoBehaviour {
         return GridSize / GridScale;
     }
 
-    private Vector3 GetCellPosUnderMouse()
+    private Vector3 GetCellAtPoint(Vector3 point)
     {
-        var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var stepSize = GetStepSize();
 
         return new Vector3(
-            Mathf.Sign(mousePosition.x) * (((int)(Mathf.Abs(mousePosition.x) / stepSize.x) + 0.5f) * stepSize.x),
-            Mathf.Sign(mousePosition.y) * (((int)(Mathf.Abs(mousePosition.y) / stepSize.y) + 0.5f) * stepSize.y),
+            Mathf.Sign(point.x) * (((int)(Mathf.Abs(point.x) / stepSize.x) + 0.5f) * stepSize.x),
+            Mathf.Sign(point.y) * (((int)(Mathf.Abs(point.y) / stepSize.y) + 0.5f) * stepSize.y),
             -1f
         );
 
