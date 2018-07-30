@@ -81,10 +81,59 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Cell.cs" />
-    <Compile Include="Assets\GUI.cs" />
-    <Compile Include="Assets\Helpers\GridSystem.cs" />
-    <Compile Include="Assets\WorkSpace\EventsSets\PlaceNewBox.cs" />
+    <Compile Include="Assets\Scripts\Builder\Builder.cs" />
+    <Compile Include="Assets\Scripts\Builder\BuilderActions.cs" />
+    <Compile Include="Assets\Scripts\Builder\BuilderMatrixCell.cs" />
+    <Compile Include="Assets\Scripts\Builder\BuilderMatrixOverlay.cs" />
+    <Compile Include="Assets\Scripts\Builder\PlanogramEvents.cs" />
+    <Compile Include="Assets\Scripts\Builder\PlanogramEventsBase.cs" />
+    <Compile Include="Assets\Scripts\Builder\PlanogramEventsState.cs" />
+    <Compile Include="Assets\Scripts\Building\Building.cs" />
+    <Compile Include="Assets\Scripts\Camera\CameraMove.cs" />
+    <Compile Include="Assets\Scripts\EventsSets\Building\MatrixCell.cs" />
+    <Compile Include="Assets\Scripts\EventsSets\Building\PlaceNewBox.cs" />
+    <Compile Include="Assets\Scripts\GUI.cs" />
+    <Compile Include="Assets\Scripts\GameLoader.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Helpers\GridSystem.cs" />
+    <Compile Include="Assets\Scripts\HotKeys.cs" />
+    <Compile Include="Assets\Scripts\PlanogramEditor\PlanogramEditor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Materials.meta" />
+    <None Include="Assets\Materials\rect.png.meta" />
+    <None Include="Assets\Prefabs.meta" />
+    <None Include="Assets\Prefabs\Box.prefab" />
+    <None Include="Assets\Prefabs\Box.prefab.meta" />
+    <None Include="Assets\Prefabs\BuilderCollider.prefab" />
+    <None Include="Assets\Prefabs\BuilderCollider.prefab.meta" />
+    <None Include="Assets\Prefabs\GameManager.prefab" />
+    <None Include="Assets\Prefabs\GameManager.prefab.meta" />
+    <None Include="Assets\Scenes.meta" />
+    <None Include="Assets\Scenes\asd.unity" />
+    <None Include="Assets\Scenes\asd.unity.meta" />
+    <None Include="Assets\Scripts.meta" />
+    <None Include="ProjectSettings\AudioManager.asset" />
+    <None Include="ProjectSettings\ClusterInputManager.asset" />
+    <None Include="ProjectSettings\DynamicsManager.asset" />
+    <None Include="ProjectSettings\EditorBuildSettings.asset" />
+    <None Include="ProjectSettings\EditorSettings.asset" />
+    <None Include="ProjectSettings\GraphicsSettings.asset" />
+    <None Include="ProjectSettings\InputManager.asset" />
+    <None Include="ProjectSettings\NavMeshAreas.asset" />
+    <None Include="ProjectSettings\NetworkManager.asset" />
+    <None Include="ProjectSettings\Physics2DSettings.asset" />
+    <None Include="ProjectSettings\ProjectSettings.asset" />
+    <None Include="ProjectSettings\QualitySettings.asset" />
+    <None Include="ProjectSettings\TagManager.asset" />
+    <None Include="ProjectSettings\TimeManager.asset" />
+    <None Include="ProjectSettings\UnityConnectSettings.asset" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="Assets\Materials\rect.png" />
+    <Content Include="Planogram.Editor.csproj" />
+    <Content Include="ProjectSettings\ProjectVersion.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
