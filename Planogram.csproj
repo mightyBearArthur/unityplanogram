@@ -82,7 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Builder\Builder.cs" />
-    <Compile Include="Assets\Scripts\Builder\BuilderActions.cs" />
+    <Compile Include="Assets\Scripts\Builder\BuilderCollider.cs" />
     <Compile Include="Assets\Scripts\Builder\BuilderMatrixCell.cs" />
     <Compile Include="Assets\Scripts\Builder\BuilderMatrixOverlay.cs" />
     <Compile Include="Assets\Scripts\Builder\PlanogramEvents.cs" />
@@ -97,7 +97,9 @@
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Helpers\GridSystem.cs" />
     <Compile Include="Assets\Scripts\HotKeys.cs" />
+    <Compile Include="Assets\Scripts\PlanogramBuilder\PlanogramBuilder.cs" />
     <Compile Include="Assets\Scripts\PlanogramEditor\PlanogramEditor.cs" />
+    <Compile Include="Assets\Scripts\Selection\SelectionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Materials.meta" />

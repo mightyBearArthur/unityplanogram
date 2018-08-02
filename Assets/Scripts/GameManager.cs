@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
 
     public int GridScale;
 
+    public bool isBuild = true;
+
     public static GameManager instance = null;
 
     void Awake()
@@ -23,5 +25,7 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
     }
+
+
 
 }

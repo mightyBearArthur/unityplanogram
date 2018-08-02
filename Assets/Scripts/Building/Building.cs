@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class Building : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
+public class Building : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerClickHandler
 {
 
     private Vector3 initialPosition;
@@ -10,37 +10,17 @@ public class Building : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     private Vector3 shift;
 
     private bool isChecked = false;
-
-    private SpriteRenderer spriteRenderer;
-
+    
     public bool isMoving = false;
 
-    public bool isValid { get; private set; }
+    private bool selected = false;
 
-    private int _collisionCount = 0;
-    private int collisionCount
-    {
-        get
-        {
-            return _collisionCount;
-        }
-
-        set
-        {
-            _collisionCount = value;
-            isValid = value == 0;
-
-            Color color = spriteRenderer.color;
-            color.a = isValid ? 1f : 0.3f;
-            spriteRenderer.color = color;
-        }
-    }
+    private BuilderCollider builderCollider;
 
     // Use this for initialization
     void Start()
     {
-        isValid = false;
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        builderCollider = GetComponent<BuilderCollider>();
     }
 
     // Update is called once per frame
@@ -51,6 +31,8 @@ public class Building : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        builderCollider.OnValidStateEvent += SetValidView;
+
         isChecked = false;
         isMoving = true;
         initialPosition = transform.position;
@@ -65,29 +47,36 @@ public class Building : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!isValid)
+        if (!builderCollider.isValid)
         {
             transform.position = initialPosition;
-            collisionCount = 0;
+            builderCollider.ResetState();
         }
         else
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
         }
 
+        builderCollider.OnValidStateEvent -= SetValidView;
         isMoving = false;
     }
-
-    public void OnTriggerEnter2D(Collider2D other)
+        
+    public void OnPointerClick(PointerEventData data)
     {
-        if (!isMoving) return;
-        collisionCount++;
+        if (!Input.GetKey(KeyCode.LeftShift))
+        {
+            SelectionHandler.instance.selected.Clear();
+        }
+
+        SelectionHandler.instance.selected.Add(gameObject);
     }
 
-    public void OnTriggerExit2D(Collider2D collision)
+    public void SetValidView(bool state)
     {
-        if (!isMoving) return;
-        collisionCount--;
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        Color color = spriteRenderer.color;
+        color.a = state ? 1f : 0.3f;
+        spriteRenderer.color = color;
     }
 
 }

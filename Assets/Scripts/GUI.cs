@@ -6,6 +6,10 @@ public class GUI : MonoBehaviour
 {
 
 
+    public GameObject buildMenu = null;
+
+    public GameObject fillMenu = null;
+
     // Use this for initialization
     void Start()
     {
@@ -18,15 +22,22 @@ public class GUI : MonoBehaviour
 
     }
 
-    public void PlaceNewBox()
-    {
-        GetComponent<PlaceNewBox>().enabled = true;
-    }
 
-
-    private void OnMouseOver()
+    public void SwitchSate()
     {
-        
+        GameManager.instance.isBuild = !GameManager.instance.isBuild;
+
+        if (GameManager.instance.isBuild)
+        {
+            buildMenu.SetActive(true);
+            fillMenu.SetActive(false);
+        }
+        else
+        {
+
+            buildMenu.SetActive(false);
+            fillMenu.SetActive(true);
+        }
     }
 
 }

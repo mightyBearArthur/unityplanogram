@@ -6,82 +6,84 @@ using System.Collections.Generic;
 
 public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
-    
+
+    /// <summary>
+    /// Object that contains all buildings.
+    /// </summary>
     public GameObject buildingsContainer = null;
 
+    /// <summary>
+    /// Current building prefab.
+    /// </summary>
+    private GameObject buildingPrefab = null;
+
+    /// <summary>
+    /// Working instance of current building prefab.
+    /// </summary>
+    private GameObject building = null;
+
+    /// <summary>
+    /// Prefab for instantiating building collider.
+    /// </summary>
     public GameObject buildingColliderPrefab = null;
 
-    public GameObject buildingCollider { get; private set; }
-
-    public GameObject building { get; private set; }
-
-    public Vector3 movementShift { get; private set; }
+    /// <summary>
+    /// Object that contais collider for validation.
+    /// </summary>
+    private GameObject buildingCollider = null;
 
     private bool buildStarted = false;
-    
-    /// <summary>
-    /// Validate buildings.
-    /// </summary>
-    /// <param name="buildings"></param>
-    /// <returns></returns>
-    private bool Validate(List<GameObject> buildings)
-    {
-        foreach (GameObject obj in buildings)
-        {
-            if (!obj.GetComponent<Building>().isValid) return false;
-        }
 
-        return true;
-    }
+    private bool draggin = false;
 
     /// <summary>
     /// Enable building actions and events overlay.
     /// </summary>
     public void Build(GameObject prefab)
     {
-        if (building != null)
+        Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        if (buildStarted)
         {
-            if (building == prefab) return;
+            if (prefab == buildingPrefab)
+                return;
+
             Destroy(building);
         }
         else
         {
-            PlanogramEventsState.instance.Enable<Builder>(gameObject);
-        }
-
-        Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        building = Instantiate(
-            prefab,
-            pos, 
-            Quaternion.identity, 
-            buildingsContainer.transform
-        );
-
-        if (!buildStarted)
-        {
+            // Prepare building collider.
             buildingCollider = Instantiate(
                 buildingColliderPrefab,
                 pos,
                 Quaternion.identity,
                 buildingsContainer.transform
             );
-            buildingCollider.transform.localScale = building.transform.localScale;
+
+            // Add event on validation state.
+            buildingCollider.GetComponent<BuilderCollider>()
+                .OnValidStateEvent += SetValidView;
+
+            // Enable overlay.
+            PlanogramEventsState.instance.Enable<Builder>(gameObject);
+
             buildStarted = true;
         }
-    }
 
-    public void PlaceBuilding()
-    {
-        Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        buildingPrefab = prefab;
 
         building = Instantiate(
-            building,
+            prefab,
             pos,
             Quaternion.identity,
             buildingsContainer.transform
         );
+
+        // Set position at building.
+        buildingCollider.transform.localScale = building.transform.localScale;
+        buildingCollider.transform.position = building.transform.position;
     }
+
 
     /// <summary>
     /// Disable building actions and events overlay.
@@ -105,12 +107,13 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
     private Vector3 vectorDirection;
 
     private Vector2 initialMatrix;
-    
+
     // Use this for initialization
     public override void Start()
     {
         base.Start();
         buildingsMatrix = new List<BuilderMatrixCell>();
+        preparedForBuild = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -127,11 +130,25 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
         }
     }
 
+    private List<GameObject> preparedForBuild;
+
+    private void SetValidView(bool state)
+    {
+        foreach (GameObject obj in preparedForBuild)
+        {
+            obj.GetComponent<Building>()
+                .SetValidView(state);
+        }
+    }
+
     public void OnBeginDrag(PointerEventData data)
     {
         followPointer = false;
         mouseInitialPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         initialMatrix = new Vector2(1, 1);
+        building.SetActive(false);
+        draggin = true;
+        preparedForBuild.Clear();
     }
 
     public void OnDrag(PointerEventData data)
@@ -142,8 +159,8 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
         if (vectorDirection == null || vectorDirection != currentVectorDirection)
         {
             vectorDirection = new Vector3(
-                Mathf.Sign(currentVectorDirection.x), 
-                Mathf.Sign(currentVectorDirection.y), 
+                Mathf.Sign(currentVectorDirection.x),
+                Mathf.Sign(currentVectorDirection.y),
                 Mathf.Sign(currentVectorDirection.z)
             );
 
@@ -152,7 +169,7 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
 
             dragInitialPoint = building.transform.position - (position / 2);
         }
-        
+
         float distX = Vector3.Distance(dragInitialPoint, new Vector3(currentPoint.x, dragInitialPoint.y, dragInitialPoint.z));
         float distY = Vector3.Distance(dragInitialPoint, new Vector3(dragInitialPoint.x, currentPoint.y, dragInitialPoint.z));
 
@@ -164,7 +181,13 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
         deltaSize.Scale(boxSize);
         buildingCollider.transform.localScale += (Vector3)deltaSize;
 
+        Vector2 step = new Vector2(currentMatrix.x * boxSize.x / 2, currentMatrix.y * boxSize.y / 2);
+        step.Scale(vectorDirection);
+        buildingCollider.transform.position = (Vector2)dragInitialPoint + step;
+
         var items = new List<BuilderMatrixCell>();
+
+        bool status = buildingCollider.GetComponent<BuilderCollider>().isValid;
 
         for (int r = 0; r < currentMatrix.y; r++)
         {
@@ -177,16 +200,20 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
 
                 if (existingBox == null)
                 {
+                    GameObject newObj = Instantiate(
+                        buildingPrefab,
+                        GetBoxPosition(matrixX, matrixY),
+                        Quaternion.identity,
+                        buildingsContainer.transform
+                    );
+
+                    newObj.GetComponent<Building>().SetValidView(status);
+
                     items.Add(new BuilderMatrixCell()
                     {
                         x = matrixX,
                         y = matrixY,
-                        gameObject = Instantiate(
-                            building,
-                            GetBoxPosition(matrixX, matrixY),
-                            Quaternion.identity,
-                            buildingsContainer.transform
-                        )
+                        gameObject = newObj
                     });
                 }
                 else
@@ -203,32 +230,72 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
 
         buildingsMatrix = items;
 
+        preparedForBuild = items.Select(x => x.gameObject).ToList();
+
         initialMatrix = currentMatrix;
+    }
+
+    /// <summary>
+    /// Made some after built setups.
+    /// </summary>
+    /// <param name="obj"></param>
+    private void FinalizeBuilding(GameObject obj)
+    {
+        obj.GetComponent<BoxCollider2D>().enabled = true;
+    }
+
+    /// <summary>
+    /// Place a single building instatiating from existing.
+    /// </summary>
+    private void PlaceBuilding()
+    {
+        if (!buildingCollider.GetComponent<BuilderCollider>().isValid) return;
+
+        FinalizeBuilding(Instantiate(building, buildingsContainer.transform));
+    }
+
+    /// <summary>
+    /// Place building from matrix.
+    /// </summary>
+    private void PlaceMatrixBuildings()
+    {
+        // If building is not valid destroy all prepared instances.
+        foreach (GameObject obj in preparedForBuild)
+        {
+            if (!buildingCollider.GetComponent<BuilderCollider>().isValid)
+                Destroy(obj);
+            else
+                FinalizeBuilding(obj);
+        }
+
+        buildingsMatrix.Clear();
+        preparedForBuild.Clear();
+        preparedForBuild.Add(building);
     }
 
     public void OnEndDrag(PointerEventData data)
     {
-        Builder.instance.buildingCollider.transform.localScale = Builder.instance.building.transform.localScale;
+        buildingCollider.transform.localScale = building.transform.localScale;
+        buildingCollider.transform.position = building.transform.position;
         buildingsMatrix.Clear();
+        building.SetActive(true);
         followPointer = true;
-        buildingsMatrix.Add(new BuilderMatrixCell()
-        {
-            x = 1,
-            y = 1,
-            gameObject = Instantiate(Builder.instance.building, Builder.instance.buildingsContainer.transform)
-        });
+        draggin = false;
+        PlaceMatrixBuildings();
     }
 
     public void OnPointerClick(PointerEventData data)
     {
+        if (draggin) return;
+
         if (data.button == PointerEventData.InputButton.Right)
         {
-            Builder.instance.StopBuild();
+            StopBuild();
         }
 
         if (data.button == PointerEventData.InputButton.Left)
         {
-            Builder.instance.PlaceBuilding();
+            PlaceBuilding();
         }
     }
 
@@ -238,8 +305,8 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
     private void MoveBuilding()
     {
         Vector3 cell = GridSystem.GetCellPosAtPoint();
-        Builder.instance.building.transform.position = new Vector3(cell.x, cell.y, -1f);
-        Builder.instance.buildingCollider.transform.position = new Vector3(cell.x, cell.y, -1f);
+        building.transform.position = new Vector3(cell.x, cell.y, -0.9999f);
+        buildingCollider.transform.position = new Vector3(cell.x, cell.y, -0.9999f);
     }
 
     private bool MatrixContains(float x, float y, Vector2 matrix)
@@ -261,8 +328,8 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
     {
         Vector2 boxSize = Builder.instance.building.transform.localScale;
         return new Vector3(
-            Builder.instance.building.transform.position.x + x * boxSize.x,
-            Builder.instance.building.transform.position.y + y * boxSize.y
+            building.transform.position.x + x * boxSize.x,
+            building.transform.position.y + y * boxSize.y
         );
     }
 
