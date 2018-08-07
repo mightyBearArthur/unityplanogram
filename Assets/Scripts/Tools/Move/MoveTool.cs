@@ -51,11 +51,15 @@ public class MoveTool : PlanogramEventsBase<MoveTool>, IBeginDragHandler, IDragH
 
     public void OnDrag(PointerEventData data)
     {
+        if (building == null) return;
+
         building.transform.position = GridSystem.GetCellPosAtPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition) + shift);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (building == null) return;
+
         BuilderCollider builderCollider = building.GetComponent<BuilderCollider>();
 
         if (!builderCollider.isValid)

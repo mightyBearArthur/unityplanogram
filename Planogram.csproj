@@ -105,6 +105,8 @@
     <Compile Include="Assets\Scripts\Tools\Remove\RemoveTool.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Fonts\GothamPro-Medium.ttf" />
+    <None Include="Assets\Fonts\GothamPro-Medium.ttf.meta" />
     <None Include="Assets\Materials.meta" />
     <None Include="Assets\Materials\rect.png.meta" />
     <None Include="Assets\Prefabs.meta" />
@@ -118,6 +120,10 @@
     <None Include="Assets\Scenes\asd.unity" />
     <None Include="Assets\Scenes\asd.unity.meta" />
     <None Include="Assets\Scripts.meta" />
+    <None Include="Builds\Build\Builds.data.unityweb" />
+    <None Include="Builds\Build\Builds.json" />
+    <None Include="Builds\Build\Builds.wasm.code.unityweb" />
+    <None Include="Builds\Build\Builds.wasm.framework.unityweb" />
     <None Include="ProjectSettings\AudioManager.asset" />
     <None Include="ProjectSettings\ClusterInputManager.asset" />
     <None Include="ProjectSettings\DynamicsManager.asset" />
@@ -137,6 +143,19 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include="Assets\Materials\rect.png" />
+    <Content Include="Builds\Build\UnityLoader.js" />
+    <Content Include="Builds\index.html" />
+    <Content Include="Builds\TemplateData\favicon.ico" />
+    <Content Include="Builds\TemplateData\fullscreen.png" />
+    <Content Include="Builds\TemplateData\progressEmpty.Dark.png" />
+    <Content Include="Builds\TemplateData\progressEmpty.Light.png" />
+    <Content Include="Builds\TemplateData\progressFull.Dark.png" />
+    <Content Include="Builds\TemplateData\progressFull.Light.png" />
+    <Content Include="Builds\TemplateData\progressLogo.Dark.png" />
+    <Content Include="Builds\TemplateData\progressLogo.Light.png" />
+    <Content Include="Builds\TemplateData\style.css" />
+    <Content Include="Builds\TemplateData\UnityProgress.js" />
+    <Content Include="Builds\TemplateData\webgl-logo.png" />
     <Content Include="Planogram.Editor.csproj" />
     <Content Include="ProjectSettings\ProjectVersion.txt" />
   </ItemGroup>
