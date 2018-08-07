@@ -68,7 +68,7 @@ public class MoveTool : PlanogramEventsBase<MoveTool>, IBeginDragHandler, IDragH
         }
         else
         {
-            building.transform.position = new Vector3(building.transform.position.x, building.transform.position.y, 0f);
+            building.transform.position = new Vector3(building.transform.position.x, building.transform.position.y, -0.9999f);
         }
 
         Building buildingHelper = building.GetComponent<Building>();
