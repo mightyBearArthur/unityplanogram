@@ -10,11 +10,12 @@ public class GridSystem : MonoBehaviour
     /// <returns></returns>
     public static Vector3 GetCellPosAtPoint(Vector3 point)
     {
-        var stepSize = GetStepSize();
+        var stepSize = GameManager.instance.GridSize;
 
+        // @todo fix hardcode..
         return new Vector3(
-            Mathf.Sign(point.x) * (((int)(Mathf.Abs(point.x) / stepSize.x) + 0.5f) * stepSize.x),
-            Mathf.Sign(point.y) * (((int)(Mathf.Abs(point.y) / stepSize.y) + 0.5f) * stepSize.y),
+            Mathf.Sign(point.x) * (((int)(Mathf.Abs(point.x) / stepSize.x)) * stepSize.x + (stepSize.x / 2)),
+            Mathf.Sign(point.y) * (((int)(Mathf.Abs(point.y) / stepSize.y)) * stepSize.y),
             -1f
         );
 
@@ -31,7 +32,7 @@ public class GridSystem : MonoBehaviour
     /// <returns></returns>
     public static Vector2 GetStepSize()
     {
-        return GameManager.instance.GridSize / GameManager.instance.GridScale;
+        return GameManager.instance.GridSize;
     }
 
 }

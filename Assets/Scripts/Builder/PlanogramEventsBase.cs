@@ -35,4 +35,11 @@ public abstract class PlanogramEventsBase<T> : PlanogramEvents
 
     }
 
+    //public abstract void Bind();
+
+    public override void Unbind()
+    {
+
+    }
+
 }

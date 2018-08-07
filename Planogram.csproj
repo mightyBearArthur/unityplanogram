@@ -99,7 +99,10 @@
     <Compile Include="Assets\Scripts\HotKeys.cs" />
     <Compile Include="Assets\Scripts\PlanogramBuilder\PlanogramBuilder.cs" />
     <Compile Include="Assets\Scripts\PlanogramEditor\PlanogramEditor.cs" />
+    <Compile Include="Assets\Scripts\Platform.cs" />
     <Compile Include="Assets\Scripts\Selection\SelectionHandler.cs" />
+    <Compile Include="Assets\Scripts\Tools\Move\MoveTool.cs" />
+    <Compile Include="Assets\Scripts\Tools\Remove\RemoveTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Materials.meta" />

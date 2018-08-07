@@ -41,6 +41,7 @@ public class PlanogramEventsState : MonoBehaviour
         if (last != null)
         {
             last.Pause();
+            last.gameObject.SetActive(false);
         }
 
         obj.SetActive(true);
@@ -52,13 +53,17 @@ public class PlanogramEventsState : MonoBehaviour
 
     public void Disable()
     {
+        if (stack.Count == 0) return;
+
         var events = stack.Pop();
+        events.Unbind();
         events.gameObject.SetActive(false);
 
         var last = stack.LastOrDefault();
 
         if (last != null)
         {
+            last.gameObject.SetActive(true);
             last.Unpause();
         }
     }
