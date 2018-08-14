@@ -13,7 +13,20 @@ public class CameraMove : PlanogramEventsBase<CameraMove>
     public float MinZoom = 5f;
 
     private Vector3 MoveOrigin;
-    
+
+    public override void Start()
+    {
+        base.Start();
+
+        GameObject eventsArea = PlanogramEventsState.instance.gameObject;
+        GameObject platform = Platform.instance.gameObject;
+
+        float platformTop = platform.transform.position.y + platform.transform.localScale.y / 2;
+        float platformRigfht = platform.transform.position.x + platform.transform.localScale.x / 2;
+        float platformBottom = platform.transform.position.y - platform.transform.localScale.y / 2;
+        float platformLeft = platform.transform.position.x - platform.transform.localScale.x / 2;
+    }
+
     // Update is called once per frame
     void Update()
     {

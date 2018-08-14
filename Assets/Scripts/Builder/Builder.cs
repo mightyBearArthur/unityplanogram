@@ -36,6 +36,8 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
 
     private bool draggin = false;
 
+    public GameObject popup = null;
+
     /// <summary>
     /// Enable building actions and events overlay.
     /// </summary>
@@ -136,11 +138,6 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
         if (followPointer)
         {
             MoveBuilding();
-        }
-
-        if (Input.GetKeyUp(KeyCode.Escape))
-        {
-            StopBuild();
         }
     }
 
@@ -258,10 +255,12 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
     /// Made some after built setups.
     /// </summary>
     /// <param name="obj"></param>
-    private void FinalizeBuilding(GameObject obj)
+    private void FinalizeBuilding(GameObject obj, Building.CellPosition pos)
     {
+        Building buildingHelper = obj.GetComponent<Building>();
         obj.GetComponent<BoxCollider2D>().enabled = true;
-        obj.GetComponent<Building>().SetDefaultView();
+        buildingHelper.SetDefaultView();
+        buildingHelper.SetPosition(pos);
         obj.transform.position = new Vector3(
             obj.transform.position.x,
             obj.transform.position.y,
@@ -272,26 +271,54 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
     /// <summary>
     /// Place a single building instatiating from existing.
     /// </summary>
-    private void PlaceBuilding()
+    private void PlaceBuilding(Building.CellPosition pos)
     {
         if (!buildingCollider.GetComponent<BuilderCollider>().isValid) return;
 
-        FinalizeBuilding(Instantiate(building, buildingsContainer.transform));
+        FinalizeBuilding(Instantiate(building, buildingsContainer.transform), pos);
         CleanActionState();
+        followPointer = true;
+    }
+
+    private void CancelBuilding()
+    {
+        CleanActionState();
+        followPointer = true;
     }
 
     /// <summary>
     /// Place building from matrix.
     /// </summary>
-    private void PlaceMatrixBuildings()
+    private void PlaceMatrixBuildings(Building.CellPosition pos)
     {
         // If building is not valid destroy all prepared instances.
         foreach (GameObject obj in preparedForBuild)
         {
             if (!buildingCollider.GetComponent<BuilderCollider>().isValid)
+            {
                 Destroy(obj);
+            }
             else
-                FinalizeBuilding(obj);
+            {
+                BuilderMatrixCell matrixPos = buildingsMatrix.Find(x => x.gameObject == obj);
+                Building.CellPosition cellPos = new Building.CellPosition()
+                {
+                    row = Mathf.Abs(matrixPos.y) + pos.row,
+                    col = Mathf.Abs(matrixPos.x) + pos.col
+                };
+
+                FinalizeBuilding(obj, cellPos);
+            }
+        }
+
+        CleanActionState();
+    }
+
+    private void CancelMatrixBuildings()
+    {
+        foreach (GameObject obj in preparedForBuild)
+        {
+            Destroy(obj);
         }
 
         CleanActionState();
@@ -302,6 +329,8 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
         buildingsMatrix.Clear();
         preparedForBuild.Clear();
         preparedForBuild.Add(building);
+        followPointer = true;
+        building.SetActive(true);
     }
 
     public void OnEndDrag(PointerEventData data)
@@ -310,11 +339,11 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
 
         buildingCollider.transform.localScale = building.transform.localScale;
         buildingCollider.transform.position = building.transform.position;
-        buildingsMatrix.Clear();
-        building.SetActive(true);
-        followPointer = true;
         draggin = false;
-        PlaceMatrixBuildings();
+
+        GameObject popupInstance = Popup.instance.Open(popup);
+        popupInstance.GetComponent<CellPositionPopup>().OnSubmitEvent += PlaceMatrixBuildings;
+        popupInstance.GetComponent<CellPositionPopup>().OnCancelEvent += CancelMatrixBuildings;
     }
 
     public void OnPointerClick(PointerEventData data)
@@ -328,7 +357,10 @@ public class Builder : PlanogramEventsBase<Builder>, IBeginDragHandler, IDragHan
 
         if (data.button == PointerEventData.InputButton.Left)
         {
-            PlaceBuilding();
+            followPointer = false;
+            GameObject popupInstance = Popup.instance.Open(popup);
+            popupInstance.GetComponent<CellPositionPopup>().OnSubmitEvent += PlaceBuilding;
+            popupInstance.GetComponent<CellPositionPopup>().OnCancelEvent += CancelBuilding;
         }
     }
 

@@ -92,17 +92,25 @@
     <Compile Include="Assets\Scripts\Camera\CameraMove.cs" />
     <Compile Include="Assets\Scripts\EventsSets\Building\MatrixCell.cs" />
     <Compile Include="Assets\Scripts\EventsSets\Building\PlaceNewBox.cs" />
+    <Compile Include="Assets\Scripts\Form\Radios\Radiobutton.cs" />
+    <Compile Include="Assets\Scripts\Form\Radios\RadiobuttonGroup.cs" />
     <Compile Include="Assets\Scripts\GUI.cs" />
     <Compile Include="Assets\Scripts\GameLoader.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Helpers\GridSystem.cs" />
     <Compile Include="Assets\Scripts\HotKeys.cs" />
+    <Compile Include="Assets\Scripts\Http models\BackwallCellParam.cs" />
+    <Compile Include="Assets\Scripts\Http models\BackwallTemplateParamModel.cs" />
+    <Compile Include="Assets\Scripts\HttpService.cs" />
     <Compile Include="Assets\Scripts\PlanogramBuilder\PlanogramBuilder.cs" />
     <Compile Include="Assets\Scripts\PlanogramEditor\PlanogramEditor.cs" />
     <Compile Include="Assets\Scripts\Platform.cs" />
+    <Compile Include="Assets\Scripts\Popup\CellPositionPopup.cs" />
+    <Compile Include="Assets\Scripts\Popup\Popup.cs" />
     <Compile Include="Assets\Scripts\Selection\SelectionHandler.cs" />
     <Compile Include="Assets\Scripts\Tools\Move\MoveTool.cs" />
     <Compile Include="Assets\Scripts\Tools\Remove\RemoveTool.cs" />
+    <Compile Include="Assets\Scripts\Tools\ToolButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Fonts\GothamPro-Medium.ttf" />
